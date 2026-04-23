@@ -36,13 +36,13 @@ export async function submitRun(payload: SubmitRunPayload): Promise<string> {
 
     // Wrap in timeout to detect hanging promises
     const addDocPromise = addDoc(collRef, docData);
-    const timeoutPromise = new Promise<string>((_, reject) =>
+    const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("addDoc() timed out after 10 seconds - likely a network/firewall issue")), 10000)
     );
 
     const docRef = await Promise.race([addDocPromise, timeoutPromise]);
-    console.log("Run submitted successfully with ID:", docRef.id || docRef);
-    return docRef.id || docRef;
+    console.log("Run submitted successfully with ID:", docRef.id);
+    return docRef.id;
   } catch (error) {
     console.error("Error submitting run:", error);
     throw error;
