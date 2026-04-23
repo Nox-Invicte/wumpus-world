@@ -213,6 +213,10 @@ export function WumpusGame() {
     setTileSeed(crypto.randomUUID());
   }, []);
 
+  const closePopup = useCallback(() => {
+    setGame((prev) => ({ ...prev, popupShown: false }));
+  }, []);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -278,6 +282,7 @@ export function WumpusGame() {
         elapsedMs={elapsedMs}
         wumpusKilled={!game.wumpusAlive}
         onRestart={resetGame}
+        onClose={closePopup}
       />
       <main className="mx-auto flex w-full max-w-6xl flex-1 p-4 md:p-8">
       <section className="grid w-full gap-6 lg:grid-cols-[320px_1fr]">

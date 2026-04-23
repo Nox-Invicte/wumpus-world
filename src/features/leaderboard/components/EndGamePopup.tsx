@@ -11,6 +11,7 @@ type EndGamePopupProps = {
   elapsedMs: number;
   wumpusKilled: boolean;
   onRestart: () => void;
+  onClose: () => void;
 };
 
 export function EndGamePopup({
@@ -19,6 +20,7 @@ export function EndGamePopup({
   elapsedMs,
   wumpusKilled,
   onRestart,
+  onClose,
 }: EndGamePopupProps) {
   const [playerName, setPlayerName] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -72,7 +74,7 @@ export function EndGamePopup({
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-[#001f3f] border-2 border-[#003366] rounded-2xl p-6 max-w-2xl w-11/12 max-h-96 overflow-y-auto shadow-2xl relative">
         <button
-          onClick={handleRestart}
+          onClick={onClose}
           className="absolute top-4 right-4 text-zinc-100 hover:text-red-400 transition-colors"
           aria-label="Close popup"
         >
