@@ -70,7 +70,26 @@ export function EndGamePopup({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-[#001f3f] border-2 border-[#003366] rounded-2xl p-6 max-w-2xl w-11/12 max-h-96 overflow-y-auto shadow-2xl">
+      <div className="bg-[#001f3f] border-2 border-[#003366] rounded-2xl p-6 max-w-2xl w-11/12 max-h-96 overflow-y-auto shadow-2xl relative">
+        <button
+          onClick={handleRestart}
+          className="absolute top-4 right-4 text-zinc-100 hover:text-red-400 transition-colors"
+          aria-label="Close popup"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
         <h1 className="text-3xl font-bold text-zinc-100 mb-4">
           {won ? "🎉 You Win!" : "💀 Game Over"}
         </h1>
