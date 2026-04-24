@@ -284,31 +284,31 @@ export function WumpusGame() {
         onRestart={resetGame}
         onClose={closePopup}
       />
-      <main className="mx-auto flex w-full max-w-6xl flex-1 p-4 md:p-8">
-      <section className="grid w-full gap-6 lg:grid-cols-[320px_1fr]">
-        <aside className="flex flex-col gap-4">
-          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-4 shadow-sm backdrop-blur-md">
-            <h2 className="text-xl font-semibold text-zinc-100">Scoreboard</h2>
-            <div className="mt-3 space-y-1 text-lg text-zinc-100">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 p-2 md:p-8">
+      <section className="grid w-full gap-3 md:gap-6 grid-cols-1 lg:grid-cols-[320px_1fr]">
+        <aside className="flex flex-col gap-3 md:gap-4 order-2 lg:order-1">
+          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-3 md:p-4 shadow-sm backdrop-blur-md">
+            <h2 className="text-lg md:text-xl font-semibold text-zinc-100">Scoreboard</h2>
+            <div className="mt-3 space-y-1 text-base md:text-lg text-zinc-100">
               <div>Time: {formatElapsedTime(elapsedMs)}</div>
               <div>Arrows: {game.arrows}</div>
               <div>Treasure: {game.hasGold ? "Collected" : "Missing"}</div>
               <div>Wumpus: {game.wumpusAlive ? "Alive" : "Dead"}</div>
             </div>
 
-            <div className="mt-4 rounded-md border border-[#001f3f]/45 bg-[#001f3f]/35 p-2 text-sm text-zinc-100 backdrop-blur-sm">
+            <div className="mt-4 rounded-md border border-[#001f3f]/45 bg-[#001f3f]/35 p-2 text-xs md:text-sm text-zinc-100 backdrop-blur-sm">
               {game.message}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-4 shadow-sm backdrop-blur-md">
-            <h2 className="text-2xl font-semibold text-zinc-100">Percepts</h2>
-            <div className="mt-3 text-lg text-zinc-100 font-medium">
+          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-3 md:p-4 shadow-sm backdrop-blur-md">
+            <h2 className="text-lg md:text-2xl font-semibold text-zinc-100">Percepts</h2>
+            <div className="mt-3 text-base md:text-lg text-zinc-100 font-medium">
               {percepts.join(", ")}
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-4 shadow-sm backdrop-blur-md">
+          <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-3 md:p-4 shadow-sm backdrop-blur-md hidden md:block">
             <h2 className="text-xl font-semibold text-zinc-100">Controls</h2>
             <div className="mt-2 space-y-1 text-base text-zinc-100">
               <div>Move: Arrow Keys or WASD</div>
@@ -319,8 +319,8 @@ export function WumpusGame() {
           </div>
 
           {ended && (
-            <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-4 shadow-sm backdrop-blur-md">
-              <div className="text-lg font-semibold text-zinc-100">
+            <div className="rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-3 md:p-4 shadow-sm backdrop-blur-md">
+              <div className="text-base md:text-lg font-semibold text-zinc-100">
                 {game.escaped
                   ? `Game Won in ${formatElapsedTime(elapsedMs)}`
                   : `Game Over at ${formatElapsedTime(elapsedMs)}`}
@@ -329,7 +329,7 @@ export function WumpusGame() {
           )}
         </aside>
 
-        <div className="flex min-w-0 flex-col gap-3">
+        <div className="flex min-w-0 flex-col gap-3 order-1 lg:order-2">
           <GameBoard
             world={world}
             game={game}
@@ -340,6 +340,70 @@ export function WumpusGame() {
             lastTurnDirection={lastTurnDirection}
             ended={ended}
           />
+          
+          {/* Mobile Controls */}
+          <div className="md:hidden rounded-xl border border-[#001f3f]/45 bg-[#001f3f]/35 p-4 shadow-sm backdrop-blur-md">
+            <div className="flex flex-col gap-3">
+              {/* Direction Controls */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => moveInDirection("N")}
+                  className="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-lg text-xl transition-colors"
+                  aria-label="Move North"
+                >
+                  ↑
+                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => moveInDirection("W")}
+                    className="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-lg text-xl transition-colors"
+                    aria-label="Move West"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={() => moveInDirection("S")}
+                    className="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-lg text-xl transition-colors"
+                    aria-label="Move South"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    onClick={() => moveInDirection("E")}
+                    className="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-lg text-xl transition-colors"
+                    aria-label="Move East"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Controls */}
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={grabGold}
+                  className="bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white font-bold py-2 px-3 rounded-lg text-sm transition-colors"
+                  aria-label="Grab Gold"
+                >
+                  Grab (Z)
+                </button>
+                <button
+                  onClick={shootArrow}
+                  className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold py-2 px-3 rounded-lg text-sm transition-colors"
+                  aria-label="Shoot Arrow"
+                >
+                  Shoot (X)
+                </button>
+                <button
+                  onClick={resetGame}
+                  className="bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold py-2 px-3 rounded-lg text-sm transition-colors"
+                  aria-label="New Game"
+                >
+                  New (N)
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

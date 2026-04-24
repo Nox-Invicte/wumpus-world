@@ -27,7 +27,16 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <header className="w-full flex justify-center bg-black/20 backdrop-blur-sm py-2">
+          <img
+            src="/title.png"
+            alt="Wumpus World"
+            className="h-12 md:h-16 object-contain"
+          />
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
