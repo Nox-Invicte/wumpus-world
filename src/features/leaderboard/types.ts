@@ -14,3 +14,12 @@ export type SubmitRunPayload = {
   wumpusKilled: boolean;
   treasureCollected: boolean;
 };
+
+export type SupabaseLeaderboardRow = {
+  id: number;
+  player_name: string;
+  elapsed_ms: number;
+  wumpus_killed: boolean;
+  treasure_collected: boolean;
+  timestamp: string;
+};

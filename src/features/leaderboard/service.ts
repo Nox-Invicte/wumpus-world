@@ -1,6 +1,6 @@
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { db } from "./firebase";
-import type { LeaderboardEntry, SubmitRunPayload } from "./types";
+import { supabase } from "./supabase";
+import { saveRunLocally, getLeaderboardLocally } from "./localStorage";
+import type { LeaderboardEntry, SubmitRunPayload, SupabaseLeaderboardRow } from "./types";
 
 function formatElapsedTime(ms: number): string {
   const clampedMs = Math.max(0, ms);
@@ -14,68 +14,85 @@ function formatElapsedTime(ms: number): string {
 
 export async function submitRun(payload: SubmitRunPayload): Promise<string> {
   try {
-    console.log("Submitting run to Firestore:", payload);
-    console.log("db object:", db);
-    console.log("db is defined:", !!db);
-    
-    if (!db) {
-      throw new Error("Firebase db not initialized - environment variables may be missing");
-    }
-
-    const collRef = collection(db, "leaderboard");
-    console.log("Collection reference created:", collRef);
+    console.log("Submitting run to Supabase:", payload);
 
     const docData = {
-      playerName: payload.playerName,
-      elapsedMs: payload.elapsedMs,
-      wumpusKilled: payload.wumpusKilled,
-      treasureCollected: payload.treasureCollected,
-      timestamp: Date.now(),
+      player_name: payload.playerName,
+      elapsed_ms: payload.elapsedMs,
+      wumpus_killed: payload.wumpusKilled,
+      treasure_collected: payload.treasureCollected,
+      timestamp: new Date().toISOString(),
     };
-    console.log("About to call addDoc with data:", docData);
+    console.log("About to insert data:", docData);
 
-    // Wrap in timeout to detect hanging promises
-    const addDocPromise = addDoc(collRef, docData);
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("addDoc() timed out after 10 seconds - likely a network/firewall issue")), 10000)
-    );
+    const { data, error } = await supabase
+      .from("leaderboard")
+      .insert([docData])
+      .select();
 
-    const docRef = await Promise.race([addDocPromise, timeoutPromise]);
-    console.log("Run submitted successfully with ID:", docRef.id);
-    return docRef.id;
+    if (error) {
+      throw new Error(`Failed to submit run: ${error.message}`);
+    }
+
+    const insertedRecord = data?.[0];
+    if (!insertedRecord) {
+      throw new Error("No data returned after insert");
+    }
+
+    console.log("Run submitted successfully to Supabase with ID:", insertedRecord.id);
+    return insertedRecord.id;
   } catch (error) {
-    console.error("Error submitting run:", error);
-    throw error;
+    console.error("Error submitting run to Supabase:", error);
+    console.warn("Falling back to localStorage");
+
+    // Fallback to localStorage
+    try {
+      const localId = saveRunLocally(payload);
+      console.log("Run saved to localStorage instead (ID:", localId + ")");
+      return localId;
+    } catch (localError) {
+      console.error("Both Supabase and localStorage failed:", localError);
+      throw new Error("Failed to submit run: Supabase unavailable and could not save locally");
+    }
   }
 }
 
 export async function fetchLeaderboard(topCount: number = 10): Promise<LeaderboardEntry[]> {
   try {
-    const q = query(
-      collection(db, "leaderboard"),
-      orderBy("elapsedMs", "asc"),
-      limit(topCount)
-    );
+    const { data, error } = await supabase
+      .from("leaderboard")
+      .select("*")
+      .order("elapsed_ms", { ascending: true })
+      .limit(topCount);
 
-    const snapshot = await getDocs(q);
-    const entries: LeaderboardEntry[] = [];
+    if (error) {
+      throw new Error(`Failed to fetch leaderboard: ${error.message}`);
+    }
 
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      entries.push({
-        id: doc.id,
-        playerName: data.playerName || "Anonymous",
-        elapsedMs: data.elapsedMs || 0,
-        wumpusKilled: data.wumpusKilled || false,
-        treasureCollected: data.treasureCollected || false,
-        timestamp: data.timestamp || Date.now(),
-        formattedTime: formatElapsedTime(data.elapsedMs || 0),
-      });
-    });
+    const entries: LeaderboardEntry[] = (data || []).map((row: SupabaseLeaderboardRow) => ({
+      id: String(row.id),
+      playerName: row.player_name || "Anonymous",
+      elapsedMs: row.elapsed_ms || 0,
+      wumpusKilled: row.wumpus_killed || false,
+      treasureCollected: row.treasure_collected || false,
+      timestamp: new Date(row.timestamp).getTime(),
+      formattedTime: formatElapsedTime(row.elapsed_ms || 0),
+    }));
 
     return entries;
   } catch (error) {
-    console.error("Error fetching leaderboard:", error);
-    throw error;
+    console.error("Error fetching leaderboard from Supabase:", error);
+    console.warn("Falling back to localStorage");
+
+    // Fallback to localStorage
+    try {
+      const localEntries = getLeaderboardLocally(topCount);
+      console.log(`Loaded ${localEntries.length} entries from localStorage`);
+      return localEntries;
+    } catch (localError) {
+      console.error("Both Supabase and localStorage failed:", localError);
+      // Return empty array instead of throwing, so the UI doesn't break
+      return [];
+    }
   }
 }
