@@ -31,45 +31,6 @@ Your goal is to navigate the cave, find the gold, and escape without being caugh
 - **Random Generation**: [seedrandom](https://www.npmjs.com/package/seedrandom)
 - **Utilities**: [clsx](https://github.com/lukeed/clsx), [zod](https://zod.dev)
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ and npm/yarn/pnpm installed
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd wumpus-world
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables (optional, required for leaderboard):
-```bash
-cp .env.example .env.local
-```
-Then add your Supabase credentials. See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed instructions.
-
-### Running the Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to play the game.
-
-### Building for Production
-
-```bash
-npm run build
-npm start
-```
 
 ## Project Structure
 
@@ -127,21 +88,7 @@ Submit your best times to the global leaderboard powered by Supabase. The leader
 - Whether you defeated the Wumpus
 - Whether you collected the treasure
 
-For setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md).
 
-## Development
-
-### Running Tests
-
-```bash
-npm run test
-```
-
-### Linting
-
-```bash
-npm run lint
-```
 
 ### Code Quality
 
@@ -150,24 +97,6 @@ The project uses:
 - TypeScript for type safety
 - Tailwind CSS for styling consistency
 
-## Environment Variables
-
-Create a `.env.local` file in the project root:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-```
-
-These values are public (NEXT_PUBLIC prefix) and safe to expose. See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for complete setup instructions.
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest improvements
-- Submit pull requests
-- Improve documentation
 
 ## License
 
@@ -179,19 +108,3 @@ This project is open source. Check the LICENSE file for details.
 - [Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev)
-
-## Troubleshooting
-
-**Leaderboard not working?**
-- Ensure Supabase environment variables are set correctly
-- Check that Row Level Security (RLS) policies are enabled in Supabase
-- See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed setup
-
-**Game not responding?**
-- Clear browser cache and reload
-- Check browser console for errors
-- Ensure you're using a modern browser
-
-**Build errors?**
-- Delete `node_modules` and `.next` folders
-- Run `npm install` and `npm run build` again
